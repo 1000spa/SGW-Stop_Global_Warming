@@ -23,24 +23,24 @@ with open("itemList.json",encoding='utf-8') as json_file:
 
 @app.route("/")
 def index():
-    if "username" in session:
-        return redirect("/dashboard")
-    return redirect("/login")
+    if "username" in session: # 세션에 "username"이 있으면 실행
+        return redirect("/dashboard") # 대시보드 페이지로 이동
+    return redirect("/login") # 세션에 "username"이 없으면 로그인 페이지로 이동
 
-@app.route("/login", methods=["GET", "POST"])
+@app.route("/login", methods=["GET", "POST"]) # 로그인 페이지
 def login():
-    if request.method == "POST":
-        username = request.form["username"]
-        password = request.form["password"]
-        if username in users and check_password_hash(users[username], password):
-            session["username"] = username
-            session["point"] = points[username]
-            return redirect("/dashboard")
-        else:
+    if request.method == "POST": # 로그인 정보 받아오기
+        username = request.form["username"] # 아이디
+        password = request.form["password"] # 비밀번호 
+        if username in users and check_password_hash(users[username], password): # 사용자 정보들 중 로그인 정보가 있으면 실행
+            session["username"] = username # 세션의 "username"을 아이디로 설정
+            session["point"] = points[username] # 세션의 "point"를 사용자 정보들 중 해당하는 포인트 개수로 설정
+            return redirect("/dashboard") # 대시보드 페이지로 이동
+        else: # 사용자 정보들 중 로그인 정보가 없으면 실행
             return render_template("login.html",error='잘못된 아이디 또는 비밀번호입니다.')
     return render_template("login.html")
 
-@app.route("/signup", methods=["GET", "POST"])
+@app.route("/signup", methods=["GET", "POST"]) # 회원가입 페이지
 def signup():
     if request.method == "POST":
         username = request.form["username"]
