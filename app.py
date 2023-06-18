@@ -60,32 +60,32 @@ def signup():
             return redirect("/login") # 로그인 페이지로 연결
     return render_template("signup.html")
 
-@app.route("/dashboard")
+@app.route("/dashboard") # 대시보드 페이지
 def protected():
-    if "username" in session:
+    if "username" in session: # 세션에 아이디가 있을 시에 작동
         username = session['username']
         session['point'] = points[username]
-        if session['username'] == "chspa103":
+        if session['username'] == "chspa103": # 관리자 계정일 시에 작동
             return render_template("admin.html",key=settingkey1)
         return render_template("index.html",mission=mission)
     else:
         return redirect("/login")
 
-@app.route("/setmission", methods=['POST'])
+@app.route("/setmission", methods=['POST']) # 미션 설정 페이지
 def setmission():
     global mission
     global settingkey1
     if request.method == "POST":
         mission1 = request.form["mission"]
         skey = request.form["settingkey"]
-        if skey == settingkey1:
+        if skey == settingkey1: # 세팅 비밀번호가 있어야 가능
             mission = mission1
             print(mission)
             return render_template("admin.html",message="세팅이 완료되었습니다.",key=settingkey1)
         else:
             return "잘못된 세팅 비밀번호"
 
-@app.route("/missioncom", methods=['POST','GET'])
+@app.route("/missioncom", methods=['POST','GET']) # 미션 완료 페이지
 def missioncom():
     username = session['username']
     c = datetime.datetime.now()
@@ -104,11 +104,11 @@ def missioncom():
         else:
             return render_template('index.html',message = "이미 미션을 완료하였습니다.")
 
-@app.route("/shop")
+@app.route("/shop") # 상품 교환 페이지
 def shop():
     return render_template("shop.html",itemList = il)
 
-@app.route("/buy",methods=['POST'])
+@app.route("/buy",methods=['POST']) # 구매 페이지
 def buy():
     if "username" in session:
         price = il[request.form['item']]
@@ -129,7 +129,7 @@ def buy():
                     points[session['username']] -= price
                     return f"구매한 제품 코드: {a}"
 
-@app.route("/logout")
+@app.route("/logout") # 로그아웃
 def logout():
     session.pop("username", None)
     return redirect("/")
