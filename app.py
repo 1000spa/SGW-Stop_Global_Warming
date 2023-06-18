@@ -37,27 +37,27 @@ def login():
             session["point"] = points[username] # 세션의 "point"를 사용자 정보들 중 해당하는 포인트 개수로 설정
             return redirect("/dashboard") # 대시보드 페이지로 이동
         else: # 사용자 정보들 중 로그인 정보가 없으면 실행
-            return render_template("login.html",error='잘못된 아이디 또는 비밀번호입니다.')
+            return render_template("login.html",error='잘못된 아이디 또는 비밀번호입니다.') # 오류 메시지 띄우기
     return render_template("login.html")
 
 @app.route("/signup", methods=["GET", "POST"]) # 회원가입 페이지
 def signup():
-    if request.method == "POST":
-        username = request.form["username"]
-        password = request.form["password"]
-        if username in users:
-            return render_template("signup.html",error="이미 사용중인 닉네임 입니다.")
-        else:
-            users[username] = generate_password_hash(password)
-            points[username] = 0
-            lastcom[username] = 0000-00-00
-            with open('users.json', 'w') as json_file:
+    if request.method == "POST": # 회원가입 정보 받아오기
+        username = request.form["username"] # 아이디
+        password = request.form["password"] # 비밀번호
+        if username in users: # 동일한 아이디를 사용 중인 사용자가 있을 경우
+            return render_template("signup.html",error="이미 사용중인 닉네임 입니다.") # 오류 메시지 띄우기
+        else: # 아닐 경우
+            users[username] = generate_password_hash(password) # 사용자 정보에 비밀번호를 암호화하여 아이디와 함께 저장
+            points[username] = 0 # 사용자의 포인트를 0으로 설정
+            lastcom[username] = 0000-00-00 # 마지막 미션 수행일을 0000-00-00으로 설정 (미션 수행 가능하게 하기 위함)
+            with open('users.json', 'w') as json_file: # 사용자 정보 파일 갱신
                 json.dump(users, json_file)
-            with open('points.json','w') as pointss:
+            with open('points.json','w') as pointss: # 사용자들의 포인트 정보 파일 갱신
                 json.dump(points, pointss)
-            with open('lastcom.json','w') as lc:
+            with open('lastcom.json','w') as lc: # 마지막 미션 수행일 파일 갱신
                 json.dump(lastcom,lc)
-            return redirect("/login")
+            return redirect("/login") # 로그인 페이지로 연결
     return render_template("signup.html")
 
 @app.route("/dashboard")
